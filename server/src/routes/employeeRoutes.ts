@@ -9,28 +9,52 @@ import {
 } from "../controllers/employeeController.js";
 
 import { validate } from "../middleware/validateMiddleware.js";
-import { createEmployeeSchema } from "../validators/employeeValidator.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
+
+import { createEmployeeSchema } from "../validators/employeeValidator.js";
+
 const router = Router();
 
 // CREATE
 router.post(
   "/",
   authMiddleware,
+  authorizeRoles("ADMIN", "HR"),
   validate(createEmployeeSchema),
-  createEmployee,
+  createEmployee
 );
 
 // GET ALL
-router.get("/", authMiddleware, getEmployees);
+router.get(
+  "/",
+  authMiddleware,
+  authorizeRoles("ADMIN", "HR", "EMPLOYEE"),
+  getEmployees
+);
 
 // GET BY ID
-router.get("/:id", authMiddleware, getEmployeeById);
+router.get(
+  "/:id",
+  authMiddleware,
+  authorizeRoles("ADMIN", "HR", "EMPLOYEE"),
+  getEmployeeById
+);
 
 // UPDATE
-router.put("/:id", authMiddleware, updateEmployee);
+router.put(
+  "/:id",
+  authMiddleware,
+  authorizeRoles("ADMIN", "HR"),
+  updateEmployee
+);
 
 // DELETE
-router.delete("/:id", authMiddleware, deleteEmployee);
+router.delete(
+  "/:id",
+  authMiddleware,
+  authorizeRoles("ADMIN"),
+  deleteEmployee
+);
 
 export default router;

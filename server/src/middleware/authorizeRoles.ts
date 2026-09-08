@@ -1,0 +1,31 @@
+import type { Request, Response, NextFunction } from "express";
+
+import type { JwtPayload } from "./authMiddleware.js";
+
+export const authorizeRoles = (
+  ...allowedRoles: JwtPayload["role"][]
+) => {
+  return (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const userRole = req.user?.role;
+
+    if (!userRole) {
+      return res.status(401).json({
+        success: false,
+        message: "User authentication required",
+      });
+    }
+
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(403).json({
+        success: false,
+        message: "You do not have permission to perform this action",
+      });
+    }
+
+    next();
+  };
+};
