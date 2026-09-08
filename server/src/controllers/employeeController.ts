@@ -1,7 +1,11 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import Employee from "../models/Employee.js";
 // CREATE EMPLOYEE
-export const createEmployee = async (req: Request, res: Response) => {
+export const createEmployee = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const employee = await Employee.create(req.body);
 
@@ -11,16 +15,15 @@ export const createEmployee = async (req: Request, res: Response) => {
       data: employee,
     });
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to create employee",
-    });
+    next(error);
   }
 };
 // GET ALL EMPLOYEES
-export const getEmployees = async (_req: Request, res: Response) => {
+export const getEmployees = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const employees = await Employee.find().sort({
       createdAt: -1,
@@ -32,17 +35,16 @@ export const getEmployees = async (_req: Request, res: Response) => {
       data: employees,
     });
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch employees",
-    });
+    next(error);
   }
 };
 
 // GET EMPLOYEE BY ID
-export const getEmployeeById = async (req: Request, res: Response) => {
+export const getEmployeeById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { id } = req.params;
 
@@ -61,17 +63,16 @@ export const getEmployeeById = async (req: Request, res: Response) => {
       data: employee,
     });
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch employee",
-    });
+    next(error);
   }
 };
 
 // UPDATE EMPLOYEE
-export const updateEmployee = async (req: Request, res: Response) => {
+export const updateEmployee = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { id } = req.params;
 
@@ -93,17 +94,16 @@ export const updateEmployee = async (req: Request, res: Response) => {
       data: employee,
     });
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to update employee",
-    });
+    next(error);
   }
 };
 
 // DELETE EMPLOYEE
-export const deleteEmployee = async (req: Request, res: Response) => {
+export const deleteEmployee = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { id } = req.params;
 
@@ -122,11 +122,6 @@ export const deleteEmployee = async (req: Request, res: Response) => {
       data: employee,
     });
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete employee",
-    });
+    next(error);
   }
 };

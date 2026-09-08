@@ -1,16 +1,24 @@
 import { Router } from "express";
+
 import {
   createEmployee,
-  deleteEmployee,
-  getEmployeeById,
   getEmployees,
+  getEmployeeById,
   updateEmployee,
+  deleteEmployee,
 } from "../controllers/employeeController.js";
+
+import { validate } from "../middleware/validateMiddleware.js";
+import { createEmployeeSchema } from "../validators/employeeValidator.js";
 
 const router = Router();
 
 // CREATE
-router.post("/", createEmployee);
+router.post(
+  "/",
+  validate(createEmployeeSchema),
+  createEmployee
+);
 
 // GET ALL
 router.get("/", getEmployees);
