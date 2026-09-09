@@ -5,15 +5,24 @@ import EmployeeTable from "../components/employees/EmployeeTable";
 const Employees = () => {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const { data, isLoading, isError } = useGetEmployeesQuery({ search });
+  const [page, setPage] = useState(1);
+  const limit = 10;
+  const { data, isLoading, isError } = useGetEmployeesQuery({
+    page,
+    limit,
+    search,
+  });
   const employees = data?.data ?? [];
+  const pagination = data?.pagination;
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearch(searchInput.trim());
+    setPage(1);
   };
   const handleClearSearch = () => {
     setSearchInput("");
     setSearch("");
+    setPage(1);
   };
   if (isLoading) {
     return (
@@ -116,7 +125,43 @@ const Employees = () => {
           </p>{" "}
         </div>
       ) : (
-        <EmployeeTable employees={employees} />
+        <>
+          <EmployeeTable employees={employees} />
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between rounded-lg border bg-white px-4 py-3 shadow-sm">
+              <p className="text-sm text-gray-500">
+                Page{" "}
+                <span className="font-medium text-gray-800">
+                  {pagination.page}
+                </span>{" "}
+                of{" "}
+                <span className="font-medium text-gray-800">
+                  {pagination.totalPages}
+                </span>
+              </p>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  disabled={page === 1}
+                  onClick={() => setPage((prev) => prev - 1)}
+                  className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Previous
+                </button>
+
+                <button
+                  type="button"
+                  disabled={page === pagination.totalPages}
+                  onClick={() => setPage((prev) => prev + 1)}
+                  className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}{" "}
     </div>
   );
