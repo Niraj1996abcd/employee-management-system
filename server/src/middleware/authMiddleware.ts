@@ -37,8 +37,8 @@ export const authMiddleware = (
 
     req.user = decoded;
     // Test decoded user information
-    console.log("User ID:", req.user?.userId);
-    console.log("User Role:", req.user?.role);
+    // console.log("User ID:", req.user?.userId);
+    // console.log("User Role:", req.user?.role);
     next();
   } catch (error) {
     console.error(error);
