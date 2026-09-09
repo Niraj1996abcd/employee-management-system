@@ -25,34 +25,13 @@ export const getEmployees = async (
   next: NextFunction,
 ) => {
   try {
-    const requestedPage = Number(req.query.page);
-    const requestedLimit = Number(req.query.limit);
+    const { page, limit, search, department, status, sortBy, sortOrder } =
+      req.validatedQuery!;
 
-    const page =
-      Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
-
-    const limit =
-      Number.isInteger(requestedLimit) && requestedLimit > 0
-        ? Math.min(requestedLimit, 100)
-        : 10;
-
-    const search = String(req.query.search || "").trim();
-
-    const department = String(req.query.department || "").trim();
-    const status = String(req.query.status || "").trim();
-    const sortBy = String(req.query.sortBy || "createdAt").trim();
-    const sortOrder = String(req.query.sortOrder || "desc").trim();
     const skip = (page - 1) * limit;
-    const allowedSortFields = [
-      "createdAt",
-      "firstName",
-      "salary",
-      "joiningDate",
-    ];
-
-    const sortField = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
 
     const sortDirection = sortOrder === "asc" ? 1 : -1;
+
     const searchQuery: Record<string, any> = {};
 
     if (search) {
@@ -72,12 +51,12 @@ export const getEmployees = async (
     }
 
     if (status) {
-      searchQuery.status = status.toUpperCase();
+      searchQuery.status = status;
     }
 
     const employees = await Employee.find(searchQuery)
       .sort({
-        [sortField]: sortDirection,
+        [sortBy]: sortDirection,
       })
       .skip(skip)
       .limit(limit);

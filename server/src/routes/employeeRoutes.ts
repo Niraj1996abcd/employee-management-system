@@ -8,11 +8,11 @@ import {
   deleteEmployee,
 } from "../controllers/employeeController.js";
 
-import { validate } from "../middleware/validateMiddleware.js";
+import { validate, validateQuery } from "../middleware/validateMiddleware.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { authorizeRoles } from "../middleware/authorizeRoles.js";
 
-import { createEmployeeSchema } from "../validators/employeeValidator.js";
+import { createEmployeeSchema, employeeQuerySchema } from "../validators/employeeValidator.js";
 
 const router = Router();
 
@@ -22,7 +22,7 @@ router.post(
   authMiddleware,
   authorizeRoles("ADMIN", "HR"),
   validate(createEmployeeSchema),
-  createEmployee
+  createEmployee,
 );
 
 // GET ALL
@@ -30,7 +30,8 @@ router.get(
   "/",
   authMiddleware,
   authorizeRoles("ADMIN", "HR", "EMPLOYEE"),
-  getEmployees
+  validateQuery(employeeQuerySchema),
+  getEmployees,
 );
 
 // GET BY ID
@@ -38,7 +39,7 @@ router.get(
   "/:id",
   authMiddleware,
   authorizeRoles("ADMIN", "HR", "EMPLOYEE"),
-  getEmployeeById
+  getEmployeeById,
 );
 
 // UPDATE
@@ -46,15 +47,10 @@ router.put(
   "/:id",
   authMiddleware,
   authorizeRoles("ADMIN", "HR"),
-  updateEmployee
+  updateEmployee,
 );
 
 // DELETE
-router.delete(
-  "/:id",
-  authMiddleware,
-  authorizeRoles("ADMIN"),
-  deleteEmployee
-);
+router.delete("/:id", authMiddleware, authorizeRoles("ADMIN"), deleteEmployee);
 
 export default router;
