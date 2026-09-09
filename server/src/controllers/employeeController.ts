@@ -38,18 +38,31 @@ export const getEmployees = async (
 
     const search = String(req.query.search || "").trim();
 
+    const department = String(req.query.department || "").trim();
+    const status = String(req.query.status || "").trim();
     const skip = (page - 1) * limit;
 
-    const searchQuery = search
-      ? {
-          $or: [
-            { employeeId: { $regex: search, $options: "i" } },
-            { firstName: { $regex: search, $options: "i" } },
-            { lastName: { $regex: search, $options: "i" } },
-            { email: { $regex: search, $options: "i" } },
-          ],
-        }
-      : {};
+    const searchQuery: Record<string, any> = {};
+
+    if (search) {
+      searchQuery.$or = [
+        { employeeId: { $regex: search, $options: "i" } },
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    if (department) {
+      searchQuery.department = {
+        $regex: department,
+        $options: "i",
+      };
+    }
+
+    if (status) {
+      searchQuery.status = status.toUpperCase();
+    }
 
     const employees = await Employee.find(searchQuery)
       .sort({
