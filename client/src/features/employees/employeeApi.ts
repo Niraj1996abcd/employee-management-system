@@ -20,6 +20,8 @@ export interface EmployeeQueryParams {
   search?: string;
   status?: "ACTIVE" | "INACTIVE";
   department?: string;
+  sortBy?: "firstName" | "joiningDate" | "salary";
+  sortOrder?: "asc" | "desc";
 }
 
 interface EmployeeResponse {
@@ -45,6 +47,8 @@ export const employeeApi = apiSlice.injectEndpoints({
           search: params?.search || undefined,
           status: params?.status || undefined,
           department: params?.department || undefined,
+          sortBy: params?.sortBy || undefined,
+          sortOrder: params?.sortOrder || undefined,
         },
       }),
     }),

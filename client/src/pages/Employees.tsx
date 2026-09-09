@@ -9,12 +9,19 @@ const Employees = () => {
   const limit = 10;
   const [status, setStatus] = useState<"" | "ACTIVE" | "INACTIVE">("");
   const [department, setDepartment] = useState("");
+  const [sortBy, setSortBy] = useState<
+    "" | "firstName" | "joiningDate" | "salary"
+  >("");
+
+  const [sortOrder, setSortOrder] = useState<"" | "asc" | "desc">("");
   const { data, isLoading, isError } = useGetEmployeesQuery({
     page,
     limit,
     search,
     status: status || undefined,
     department: department || undefined,
+    sortBy: sortBy || undefined,
+    sortOrder: sortOrder || undefined,
   });
   const employees = data?.data ?? [];
   const pagination = data?.pagination;
@@ -28,6 +35,8 @@ const Employees = () => {
     setSearch("");
     setStatus("");
     setDepartment("");
+    setSortBy("");
+    setSortOrder("");
     setPage(1);
   };
   if (isLoading) {
@@ -115,6 +124,55 @@ const Employees = () => {
           <option value="Finance">Finance</option>
           <option value="Sales">Sales</option>
           <option value="Marketing">Marketing</option>
+        </select>
+        <select
+          value={sortBy}
+          onChange={(e) => {
+            const value = e.target.value as
+              | ""
+              | "firstName"
+              | "joiningDate"
+              | "salary";
+
+            setSortBy(value);
+            setPage(1);
+
+            if (!value) {
+              setSortOrder("");
+            }
+          }}
+          className="rounded border px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="">Sort By</option>
+          <option value="firstName">Name</option>
+          <option value="joiningDate">Joining Date</option>
+          <option value="salary">Salary</option>
+        </select>
+        <select
+          value={sortOrder}
+          onChange={(e) => {
+            setSortOrder(e.target.value as "" | "asc" | "desc");
+            setPage(1);
+          }}
+          disabled={!sortBy}
+          className="rounded border px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
+        >
+          <option value="">Order</option>
+          <option value="asc">
+            {sortBy === "salary"
+              ? "Low to High"
+              : sortBy === "joiningDate"
+                ? "Oldest First"
+                : "A to Z"}
+          </option>
+
+          <option value="desc">
+            {sortBy === "salary"
+              ? "High to Low"
+              : sortBy === "joiningDate"
+                ? "Newest First"
+                : "Z to A"}
+          </option>
         </select>
         <button
           type="submit"
