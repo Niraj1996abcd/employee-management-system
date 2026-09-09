@@ -1,16 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-import {
-  useCreateEmployeeMutation,
-} from "../features/employees/employeeApi";
+import { useCreateEmployeeMutation } from "../features/employees/employeeApi";
 
 const AddEmployee = () => {
   const navigate = useNavigate();
 
-  const [createEmployee, { isLoading }] =
-    useCreateEmployeeMutation();
+  const [createEmployee, { isLoading }] = useCreateEmployeeMutation();
 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [formData, setFormData] = useState({
     employeeId: "",
     firstName: "",
@@ -23,11 +22,8 @@ const AddEmployee = () => {
     salary: "",
     status: "ACTIVE",
   });
-
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -37,10 +33,11 @@ const AddEmployee = () => {
     }));
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setErrorMessage("");
+    setSuccessMessage("");
 
     try {
       await createEmployee({
@@ -49,9 +46,16 @@ const AddEmployee = () => {
         status: formData.status as "ACTIVE" | "INACTIVE",
       }).unwrap();
 
-      navigate("/employees");
-    } catch (error) {
-      console.error("Failed to create employee:", error);
+      setSuccessMessage("Employee added successfully.");
+
+      setTimeout(() => {
+        navigate("/employees");
+      }, 1000);
+    } catch (error: any) {
+      const message =
+        error?.data?.message || "Failed to add employee. Please try again.";
+
+      setErrorMessage(message);
     }
   };
 
@@ -59,9 +63,7 @@ const AddEmployee = () => {
     <div className="space-y-6">
       {/* Page heading */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">
-          Add Employee
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-800">Add Employee</h1>
 
         <p className="mt-1 text-sm text-gray-500">
           Add a new employee to the system.
@@ -73,6 +75,18 @@ const AddEmployee = () => {
         onSubmit={handleSubmit}
         className="rounded-lg border bg-white p-5 shadow-sm"
       >
+        {errorMessage && (
+          <div className="mb-5 rounded-lg border border-red-200 bg-red-50 p-3">
+            <p className="text-sm font-medium text-red-700">{errorMessage}</p>
+          </div>
+        )}
+        {successMessage && (
+          <div className="mb-5 rounded-lg border border-green-200 bg-green-50 p-3">
+            <p className="text-sm font-medium text-green-700">
+              {successMessage}
+            </p>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {/* Employee ID */}
           <div>

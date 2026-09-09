@@ -27,6 +27,7 @@ const Employees = () => {
   });
   const employees = data?.data ?? [];
   const pagination = data?.pagination;
+  
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearch(searchInput.trim());
