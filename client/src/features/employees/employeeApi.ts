@@ -14,6 +14,10 @@ export interface Employee {
   status: "ACTIVE" | "INACTIVE";
 }
 
+export interface EmployeeQueryParams {
+  search?: string;
+}
+
 interface EmployeeResponse {
   success: boolean;
   message: string;
@@ -28,8 +32,15 @@ interface EmployeeResponse {
 
 export const employeeApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getEmployees: builder.query<EmployeeResponse, void>({
-      query: () => "/employees",
+    getEmployees: builder.query<EmployeeResponse, EmployeeQueryParams | void>({
+      query: (params) => ({
+        url: "/employees",
+        params: params?.search
+          ? {
+              search: params.search,
+            }
+          : undefined,
+      }),
     }),
   }),
 });
