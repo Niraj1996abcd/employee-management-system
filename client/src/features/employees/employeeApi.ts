@@ -23,7 +23,18 @@ export interface EmployeeQueryParams {
   sortBy?: "firstName" | "joiningDate" | "salary";
   sortOrder?: "asc" | "desc";
 }
-
+export interface CreateEmployeeRequest {
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  department: string;
+  designation: string;
+  joiningDate: string;
+  salary: number;
+  status: "ACTIVE" | "INACTIVE";
+}
 interface EmployeeResponse {
   success: boolean;
   message: string;
@@ -52,7 +63,21 @@ export const employeeApi = apiSlice.injectEndpoints({
         },
       }),
     }),
+    createEmployee: builder.mutation<
+      {
+        success: boolean;
+        message: string;
+        data: Employee;
+      },
+      CreateEmployeeRequest
+    >({
+      query: (body) => ({
+        url: "/employees",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useGetEmployeesQuery } = employeeApi;
+export const { useGetEmployeesQuery, useCreateEmployeeMutation } = employeeApi;

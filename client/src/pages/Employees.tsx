@@ -2,8 +2,10 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useGetEmployeesQuery } from "../features/employees/employeeApi";
 import EmployeeTable from "../components/employees/EmployeeTable";
+import { useNavigate } from "react-router-dom";
 const Employees = () => {
   const [searchInput, setSearchInput] = useState("");
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const limit = 10;
@@ -78,12 +80,11 @@ const Employees = () => {
         </div>{" "}
         <button
           type="button"
-          disabled
-          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white opacity-50"
+          onClick={() => navigate("/employees/add")}
+          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
         >
-          {" "}
-          Add Employee{" "}
-        </button>{" "}
+          Add Employee
+        </button>
       </div>{" "}
       {/* Search */}{" "}
       <form
