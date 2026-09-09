@@ -19,6 +19,7 @@ export interface EmployeeQueryParams {
   limit?: number;
   search?: string;
   status?: "ACTIVE" | "INACTIVE";
+  department?: string;
 }
 
 interface EmployeeResponse {
@@ -43,6 +44,7 @@ export const employeeApi = apiSlice.injectEndpoints({
           limit: params?.limit,
           search: params?.search || undefined,
           status: params?.status || undefined,
+          department: params?.department || undefined,
         },
       }),
     }),

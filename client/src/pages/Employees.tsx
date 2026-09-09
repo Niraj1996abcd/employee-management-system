@@ -8,11 +8,13 @@ const Employees = () => {
   const [page, setPage] = useState(1);
   const limit = 10;
   const [status, setStatus] = useState<"" | "ACTIVE" | "INACTIVE">("");
+  const [department, setDepartment] = useState("");
   const { data, isLoading, isError } = useGetEmployeesQuery({
     page,
     limit,
     search,
     status: status || undefined,
+    department: department || undefined,
   });
   const employees = data?.data ?? [];
   const pagination = data?.pagination;
@@ -25,6 +27,7 @@ const Employees = () => {
     setSearchInput("");
     setSearch("");
     setStatus("");
+    setDepartment("");
     setPage(1);
   };
   if (isLoading) {
@@ -98,7 +101,21 @@ const Employees = () => {
           <option value="ACTIVE">Active</option>
           <option value="INACTIVE">Inactive</option>
         </select>
-
+        <select
+          value={department}
+          onChange={(e) => {
+            setDepartment(e.target.value);
+            setPage(1);
+          }}
+          className="rounded border px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="">All Departments</option>
+          <option value="IT">IT</option>
+          <option value="HR">HR</option>
+          <option value="Finance">Finance</option>
+          <option value="Sales">Sales</option>
+          <option value="Marketing">Marketing</option>
+        </select>
         <button
           type="submit"
           className="rounded bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700"
