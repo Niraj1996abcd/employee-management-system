@@ -1,12 +1,31 @@
 
-import { getUser } from "../utils/authUtils";
+import { useNavigate } from "react-router-dom";
+
+import { getUser, logout } from "../utils/authUtils";
+import { apiSlice } from "../store/api/apiSlice";
+import { useAppDispatch } from "../hooks/reduxHooks";
+
 
 interface HeaderProps {
   onMenuClick: () => void;
 }
 
 const Header = ({ onMenuClick }: HeaderProps) => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   const user = getUser();
+
+  const handleLogout = () => {
+    // Remove token and user from localStorage
+    logout();
+
+    // Clear RTK Query cached data
+    dispatch(apiSlice.util.resetApiState());
+
+    // Navigate to login page
+    navigate("/login", { replace: true });
+  };
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-white px-4 md:px-6">
@@ -28,9 +47,10 @@ const Header = ({ onMenuClick }: HeaderProps) => {
         </h2>
       </div>
 
-      {/* User information */}
-      <div className="flex items-center gap-2 md:gap-3">
-        <div className="text-right">
+      {/* User information + Logout */}
+      <div className="flex items-center gap-3">
+        {/* User details */}
+        <div className="hidden text-right sm:block">
           <p className="text-sm font-medium text-gray-800">
             {user?.name}
           </p>
@@ -40,9 +60,19 @@ const Header = ({ onMenuClick }: HeaderProps) => {
           </p>
         </div>
 
+        {/* Avatar */}
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">
           {user?.name?.charAt(0).toUpperCase()}
         </div>
+
+        {/* Logout */}
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="rounded bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
+        >
+          Logout
+        </button>
       </div>
     </header>
   );
