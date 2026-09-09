@@ -18,6 +18,7 @@ export interface EmployeeQueryParams {
   page?: number;
   limit?: number;
   search?: string;
+  status?: "ACTIVE" | "INACTIVE";
 }
 
 interface EmployeeResponse {
@@ -34,16 +35,14 @@ interface EmployeeResponse {
 
 export const employeeApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getEmployees: builder.query<
-      EmployeeResponse,
-      EmployeeQueryParams | void
-    >({
+    getEmployees: builder.query<EmployeeResponse, EmployeeQueryParams | void>({
       query: (params) => ({
         url: "/employees",
         params: {
           page: params?.page,
           limit: params?.limit,
           search: params?.search || undefined,
+          status: params?.status || undefined,
         },
       }),
     }),

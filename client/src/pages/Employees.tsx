@@ -7,10 +7,12 @@ const Employees = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const limit = 10;
+  const [status, setStatus] = useState<"" | "ACTIVE" | "INACTIVE">("");
   const { data, isLoading, isError } = useGetEmployeesQuery({
     page,
     limit,
     search,
+    status: status || undefined,
   });
   const employees = data?.data ?? [];
   const pagination = data?.pagination;
@@ -22,6 +24,7 @@ const Employees = () => {
   const handleClearSearch = () => {
     setSearchInput("");
     setSearch("");
+    setStatus("");
     setPage(1);
   };
   if (isLoading) {
@@ -75,32 +78,44 @@ const Employees = () => {
         onSubmit={handleSearch}
         className="flex flex-col gap-3 rounded-lg border bg-white p-4 shadow-sm sm:flex-row"
       >
-        {" "}
         <input
           type="text"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           placeholder="Search by name, email or employee ID"
           className="flex-1 rounded border px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        />{" "}
+        />
+
+        <select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value as "" | "ACTIVE" | "INACTIVE");
+            setPage(1);
+          }}
+          className="rounded border px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="">All Status</option>
+          <option value="ACTIVE">Active</option>
+          <option value="INACTIVE">Inactive</option>
+        </select>
+
         <button
           type="submit"
           className="rounded bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700"
         >
-          {" "}
-          Search{" "}
-        </button>{" "}
+          Search
+        </button>
+
         {search && (
           <button
             type="button"
             onClick={handleClearSearch}
             className="rounded border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
-            {" "}
-            Clear{" "}
+            Clear
           </button>
-        )}{" "}
-      </form>{" "}
+        )}
+      </form>
       {/* Search result information */}{" "}
       {search && (
         <p className="text-sm text-gray-500">
