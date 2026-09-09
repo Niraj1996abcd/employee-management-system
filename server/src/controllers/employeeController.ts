@@ -40,8 +40,19 @@ export const getEmployees = async (
 
     const department = String(req.query.department || "").trim();
     const status = String(req.query.status || "").trim();
+    const sortBy = String(req.query.sortBy || "createdAt").trim();
+    const sortOrder = String(req.query.sortOrder || "desc").trim();
     const skip = (page - 1) * limit;
+    const allowedSortFields = [
+      "createdAt",
+      "firstName",
+      "salary",
+      "joiningDate",
+    ];
 
+    const sortField = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
+
+    const sortDirection = sortOrder === "asc" ? 1 : -1;
     const searchQuery: Record<string, any> = {};
 
     if (search) {
@@ -66,7 +77,7 @@ export const getEmployees = async (
 
     const employees = await Employee.find(searchQuery)
       .sort({
-        createdAt: -1,
+        [sortField]: sortDirection,
       })
       .skip(skip)
       .limit(limit);
