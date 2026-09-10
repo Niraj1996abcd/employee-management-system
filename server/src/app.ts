@@ -10,11 +10,11 @@ import { errorMiddleware } from "./middleware/errorMiddleware.js";
 const app = express();
 
 // console.log("CLIENT_URL:", process.env.CLIENT_URL);
-
+const allowedOrigins = process.env.CLIENT_URL?.split(",") || [];
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
-  })
+    origin: allowedOrigins,
+  }),
 );
 
 app.use(express.json());
