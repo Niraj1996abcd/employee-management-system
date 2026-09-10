@@ -7,12 +7,13 @@ import AddEmployee from "../pages/AddEmployee";
 import ProtectedRoute from "./ProtectedRoute";
 import MainLayout from "../layouts/MainLayout";
 import EditEmployee from "../pages/EditEmployee";
+import Register from "../pages/Register";
 const AppRoutes = () => {
   return (
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={<Login />} />
-
+      <Route path="/register" element={<Register />} />
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>

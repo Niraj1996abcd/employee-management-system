@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../features/auth/authApi";
 import { setAuthData } from "../utils/authUtils";
+// import { Link } from "react-router-dom";
 const Login = () => {
   const navigate = useNavigate();
 
@@ -73,6 +74,17 @@ const Login = () => {
             {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
+        {/* <div className="mt-5 text-center">
+          <p className="text-sm text-gray-500">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="font-medium text-blue-600 hover:text-blue-700"
+            >
+              Register
+            </Link>
+          </p>
+        </div> */}
       </div>
     </div>
   );
