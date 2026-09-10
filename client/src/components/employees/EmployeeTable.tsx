@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 import type { Employee } from "../../features/employees/employeeApi";
 
 import { useDeleteEmployeeMutation } from "../../features/employees/employeeApi";
-
+import { getUser } from "../../utils/authUtils";
 interface EmployeeTableProps {
   employees: Employee[];
 }
 
 const EmployeeTable = ({ employees }: EmployeeTableProps) => {
   const navigate = useNavigate();
-
+  const user = getUser();
   const [deleteEmployee, { isLoading: isDeleting }] =
     useDeleteEmployeeMutation();
 
@@ -19,7 +19,7 @@ const EmployeeTable = ({ employees }: EmployeeTableProps) => {
 
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete this employee?"
+      "Are you sure you want to delete this employee?",
     );
 
     if (!confirmed) {
@@ -32,8 +32,7 @@ const EmployeeTable = ({ employees }: EmployeeTableProps) => {
       await deleteEmployee(id).unwrap();
     } catch (error: any) {
       const message =
-        error?.data?.message ||
-        "Failed to delete employee. Please try again.";
+        error?.data?.message || "Failed to delete employee. Please try again.";
 
       setErrorMessage(message);
     }
@@ -43,9 +42,7 @@ const EmployeeTable = ({ employees }: EmployeeTableProps) => {
     <div>
       {errorMessage && (
         <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4">
-          <p className="text-sm font-medium text-red-700">
-            {errorMessage}
-          </p>
+          <p className="text-sm font-medium text-red-700">{errorMessage}</p>
         </div>
       )}
 
@@ -54,54 +51,31 @@ const EmployeeTable = ({ employees }: EmployeeTableProps) => {
           <table className="min-w-full text-left text-sm">
             <thead className="bg-gray-50 text-xs uppercase text-gray-500">
               <tr>
-                <th className="px-4 py-3 font-semibold">
-                  Employee ID
-                </th>
+                <th className="px-4 py-3 font-semibold">Employee ID</th>
 
-                <th className="px-4 py-3 font-semibold">
-                  Name
-                </th>
+                <th className="px-4 py-3 font-semibold">Name</th>
 
-                <th className="px-4 py-3 font-semibold">
-                  Email
-                </th>
+                <th className="px-4 py-3 font-semibold">Email</th>
 
-                <th className="px-4 py-3 font-semibold">
-                  Phone
-                </th>
+                <th className="px-4 py-3 font-semibold">Phone</th>
 
-                <th className="px-4 py-3 font-semibold">
-                  Department
-                </th>
+                <th className="px-4 py-3 font-semibold">Department</th>
 
-                <th className="px-4 py-3 font-semibold">
-                  Designation
-                </th>
+                <th className="px-4 py-3 font-semibold">Designation</th>
 
-                <th className="px-4 py-3 font-semibold">
-                  Joining Date
-                </th>
+                <th className="px-4 py-3 font-semibold">Joining Date</th>
 
-                <th className="px-4 py-3 font-semibold">
-                  Salary
-                </th>
+                <th className="px-4 py-3 font-semibold">Salary</th>
 
-                <th className="px-4 py-3 font-semibold">
-                  Status
-                </th>
+                <th className="px-4 py-3 font-semibold">Status</th>
 
-                <th className="px-4 py-3 font-semibold">
-                  Actions
-                </th>
+                <th className="px-4 py-3 font-semibold">Actions</th>
               </tr>
             </thead>
 
             <tbody className="divide-y">
               {employees.map((employee) => (
-                <tr
-                  key={employee._id}
-                  className="hover:bg-gray-50"
-                >
+                <tr key={employee._id} className="hover:bg-gray-50">
                   <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-800">
                     {employee.employeeId}
                   </td>
@@ -127,9 +101,7 @@ const EmployeeTable = ({ employees }: EmployeeTableProps) => {
                   </td>
 
                   <td className="whitespace-nowrap px-4 py-3 text-gray-700">
-                    {new Date(
-                      employee.joiningDate
-                    ).toLocaleDateString()}
+                    {new Date(employee.joiningDate).toLocaleDateString()}
                   </td>
 
                   <td className="whitespace-nowrap px-4 py-3 text-gray-700">
@@ -150,29 +122,29 @@ const EmployeeTable = ({ employees }: EmployeeTableProps) => {
 
                   <td className="whitespace-nowrap px-4 py-3">
                     <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          navigate(
-                            `/employees/edit/${employee._id}`
-                          )
-                        }
-                        disabled={isDeleting}
-                        className="rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        Edit
-                      </button>
+                      {(user?.role === "ADMIN" || user?.role === "HR") && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            navigate(`/employees/edit/${employee._id}`)
+                          }
+                          disabled={isDeleting}
+                          className="rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          Edit
+                        </button>
+                      )}
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleDelete(employee._id)
-                        }
-                        disabled={isDeleting}
-                        className="rounded bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {isDeleting ? "Deleting..." : "Delete"}
-                      </button>
+                      {user?.role === "ADMIN" && (
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(employee._id)}
+                          disabled={isDeleting}
+                          className="rounded bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {isDeleting ? "Deleting..." : "Delete"}
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

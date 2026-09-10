@@ -3,8 +3,10 @@ import type { FormEvent } from "react";
 import { useGetEmployeesQuery } from "../features/employees/employeeApi";
 import EmployeeTable from "../components/employees/EmployeeTable";
 import { useNavigate } from "react-router-dom";
+import { getUser } from "../utils/authUtils";
 const Employees = () => {
   const [searchInput, setSearchInput] = useState("");
+  const user = getUser();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -27,7 +29,7 @@ const Employees = () => {
   });
   const employees = data?.data ?? [];
   const pagination = data?.pagination;
-  
+
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearch(searchInput.trim());
@@ -79,13 +81,15 @@ const Employees = () => {
             Manage your employees.{" "}
           </p>{" "}
         </div>{" "}
-        <button
-          type="button"
-          onClick={() => navigate("/employees/add")}
-          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          Add Employee
-        </button>
+        {(user?.role === "ADMIN" || user?.role === "HR") && (
+          <button
+            type="button"
+            onClick={() => navigate("/employees/add")}
+            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            Add Employee
+          </button>
+        )}
       </div>{" "}
       {/* Search */}{" "}
       <form
