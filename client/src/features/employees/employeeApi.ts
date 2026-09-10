@@ -73,6 +73,8 @@ export const employeeApi = apiSlice.injectEndpoints({
           sortOrder: params?.sortOrder || undefined,
         },
       }),
+
+      providesTags: ["Employee"],
     }),
     updateEmployee: builder.mutation<
       {
@@ -90,6 +92,8 @@ export const employeeApi = apiSlice.injectEndpoints({
         method: "PUT",
         body,
       }),
+
+      invalidatesTags: ["Employee"],
     }),
     getEmployeeById: builder.query<
       {
@@ -100,6 +104,20 @@ export const employeeApi = apiSlice.injectEndpoints({
       string
     >({
       query: (id) => `/employees/${id}`,
+    }),
+    deleteEmployee: builder.mutation<
+      {
+        success: boolean;
+        message: string;
+      },
+      string
+    >({
+      query: (id) => ({
+        url: `/employees/${id}`,
+        method: "DELETE",
+      }),
+
+      invalidatesTags: ["Employee"],
     }),
     // ----------------------
     createEmployee: builder.mutation<
@@ -115,6 +133,8 @@ export const employeeApi = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
+
+      invalidatesTags: ["Employee"],
     }),
   }),
 });
@@ -124,4 +144,5 @@ export const {
   useGetEmployeeByIdQuery,
   useCreateEmployeeMutation,
   useUpdateEmployeeMutation,
+  useDeleteEmployeeMutation,
 } = employeeApi;

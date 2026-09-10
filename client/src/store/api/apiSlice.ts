@@ -1,7 +1,4 @@
-import {
-  createApi,
-  fetchBaseQuery,
-} from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { getToken } from "../../utils/authUtils";
 
@@ -21,8 +18,9 @@ const baseQuery = fetchBaseQuery({
 
 export const apiSlice = createApi({
   reducerPath: "api",
-
   baseQuery,
+
+  tagTypes: ["Employee"],
 
   endpoints: () => ({}),
 });
