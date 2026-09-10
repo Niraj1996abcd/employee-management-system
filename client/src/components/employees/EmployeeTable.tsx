@@ -1,8 +1,10 @@
 import type { Employee } from "../../features/employees/employeeApi";
+import { useNavigate } from "react-router-dom";
 interface EmployeeTableProps {
   employees: Employee[];
 }
 const EmployeeTable = ({ employees }: EmployeeTableProps) => {
+  const navigate = useNavigate();
   return (
     <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
       {" "}
@@ -23,6 +25,7 @@ const EmployeeTable = ({ employees }: EmployeeTableProps) => {
               <th className="px-4 py-3 font-semibold"> Joining Date </th>{" "}
               <th className="px-4 py-3 font-semibold"> Salary </th>{" "}
               <th className="px-4 py-3 font-semibold"> Status </th>{" "}
+              <th className="px-4 py-3 font-semibold">Actions</th>
             </tr>{" "}
           </thead>{" "}
           <tbody className="divide-y">
@@ -71,6 +74,15 @@ const EmployeeTable = ({ employees }: EmployeeTableProps) => {
                     {employee.status}{" "}
                   </span>{" "}
                 </td>{" "}
+                <td className="whitespace-nowrap px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/employees/edit/${employee._id}`)}
+                    className="rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
+                  >
+                    Edit
+                  </button>
+                </td>
               </tr>
             ))}{" "}
           </tbody>{" "}

@@ -46,7 +46,18 @@ interface EmployeeResponse {
     totalPages: number;
   };
 }
-
+export interface UpdateEmployeeRequest {
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  department: string;
+  designation: string;
+  joiningDate: string;
+  salary: number;
+  status: "ACTIVE" | "INACTIVE";
+}
 export const employeeApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getEmployees: builder.query<EmployeeResponse, EmployeeQueryParams | void>({
@@ -63,6 +74,34 @@ export const employeeApi = apiSlice.injectEndpoints({
         },
       }),
     }),
+    updateEmployee: builder.mutation<
+      {
+        success: boolean;
+        message: string;
+        data: Employee;
+      },
+      {
+        id: string;
+        body: UpdateEmployeeRequest;
+      }
+    >({
+      query: ({ id, body }) => ({
+        url: `/employees/${id}`,
+        method: "PUT",
+        body,
+      }),
+    }),
+    getEmployeeById: builder.query<
+      {
+        success: boolean;
+        message: string;
+        data: Employee;
+      },
+      string
+    >({
+      query: (id) => `/employees/${id}`,
+    }),
+    // ----------------------
     createEmployee: builder.mutation<
       {
         success: boolean;
@@ -80,4 +119,9 @@ export const employeeApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetEmployeesQuery, useCreateEmployeeMutation } = employeeApi;
+export const {
+  useGetEmployeesQuery,
+  useGetEmployeeByIdQuery,
+  useCreateEmployeeMutation,
+  useUpdateEmployeeMutation,
+} = employeeApi;
