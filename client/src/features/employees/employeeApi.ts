@@ -62,7 +62,7 @@ export const employeeApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getEmployees: builder.query<EmployeeResponse, EmployeeQueryParams | void>({
       query: (params) => ({
-        url: "/employees",
+        url: "/api/employees",
         params: {
           page: params?.page,
           limit: params?.limit,
@@ -88,7 +88,7 @@ export const employeeApi = apiSlice.injectEndpoints({
       }
     >({
       query: ({ id, body }) => ({
-        url: `/employees/${id}`,
+        url: `/api/employees/${id}`,
         method: "PUT",
         body,
       }),
@@ -103,7 +103,7 @@ export const employeeApi = apiSlice.injectEndpoints({
       },
       string
     >({
-      query: (id) => `/employees/${id}`,
+      query: (id) => `/api/employees/${id}`,
     }),
     deleteEmployee: builder.mutation<
       {
@@ -113,7 +113,7 @@ export const employeeApi = apiSlice.injectEndpoints({
       string
     >({
       query: (id) => ({
-        url: `/employees/${id}`,
+        url: `/api/employees/${id}`,
         method: "DELETE",
       }),
 
@@ -129,7 +129,7 @@ export const employeeApi = apiSlice.injectEndpoints({
       CreateEmployeeRequest
     >({
       query: (body) => ({
-        url: "/employees",
+        url: "/api/employees",
         method: "POST",
         body,
       }),
