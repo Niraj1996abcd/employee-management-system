@@ -2,19 +2,21 @@ import { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { useGetEmployeeByIdQuery } from "../features/employees/employeeApi";
+import {
+  useGetEmployeeByIdQuery,
+  useUpdateEmployeeMutation,
+} from "../features/employees/employeeApi";
 
 const EditEmployee = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useGetEmployeeByIdQuery(id!, {
+  const { data, isLoading, isError } = useGetEmployeeByIdQuery(id!, {
     skip: !id,
   });
+
+  const [updateEmployee, { isLoading: isUpdating }] =
+    useUpdateEmployeeMutation();
 
   const [formData, setFormData] = useState({
     employeeId: "",
@@ -28,6 +30,9 @@ const EditEmployee = () => {
     salary: "",
     status: "ACTIVE",
   });
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (data?.data) {
@@ -51,7 +56,7 @@ const EditEmployee = () => {
   }, [data]);
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -61,18 +66,44 @@ const EditEmployee = () => {
     }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log("Edit employee data:", formData);
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    if (!id) {
+      setErrorMessage("Employee ID is missing.");
+      return;
+    }
+
+    try {
+      await updateEmployee({
+        id,
+        body: {
+          ...formData,
+          salary: Number(formData.salary),
+          status: formData.status as "ACTIVE" | "INACTIVE",
+        },
+      }).unwrap();
+
+      setSuccessMessage("Employee updated successfully.");
+
+      setTimeout(() => {
+        navigate("/employees");
+      }, 1000);
+    } catch (error: any) {
+      const message =
+        error?.data?.message || "Failed to update employee. Please try again.";
+
+      setErrorMessage(message);
+    }
   };
 
   if (isLoading) {
     return (
       <div className="flex min-h-60 items-center justify-center">
-        <p className="text-sm text-gray-500">
-          Loading employee...
-        </p>
+        <p className="text-sm text-gray-500">Loading employee...</p>
       </div>
     );
   }
@@ -80,9 +111,7 @@ const EditEmployee = () => {
   if (isError || !data?.data) {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-5">
-        <h2 className="font-semibold text-red-700">
-          Failed to load employee
-        </h2>
+        <h2 className="font-semibold text-red-700">Failed to load employee</h2>
 
         <p className="mt-1 text-sm text-red-600">
           Employee information could not be loaded.
@@ -102,21 +131,30 @@ const EditEmployee = () => {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Edit Employee
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-800">Edit Employee</h1>
 
         <p className="mt-1 text-sm text-gray-500">
           Update employee information.
         </p>
       </div>
 
+      {errorMessage && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4">
+          <p className="text-sm font-medium text-red-700">{errorMessage}</p>
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 p-4">
+          <p className="text-sm font-medium text-green-700">{successMessage}</p>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="space-y-6 rounded-lg border bg-white p-6 shadow-sm"
       >
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-
           {/* Employee ID */}
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
@@ -291,16 +329,18 @@ const EditEmployee = () => {
           <button
             type="button"
             onClick={() => navigate("/employees")}
-            className="rounded bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300"
+            disabled={isUpdating}
+            className="rounded bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
           </button>
 
           <button
             type="submit"
-            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            disabled={isUpdating}
+            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Update Employee
+            {isUpdating ? "Updating..." : "Update Employee"}
           </button>
         </div>
       </form>
