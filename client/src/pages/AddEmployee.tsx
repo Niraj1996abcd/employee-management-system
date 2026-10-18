@@ -5,7 +5,7 @@ import { useCreateEmployeeMutation } from "../features/employees/employeeApi";
 
 const AddEmployee = () => {
   const navigate = useNavigate();
-// check
+
   const [createEmployee, { isLoading }] = useCreateEmployeeMutation();
 
   const [errorMessage, setErrorMessage] = useState("");
